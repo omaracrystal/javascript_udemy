@@ -1,31 +1,33 @@
 # Javascript Understanding the Weird Parts
 
 ## Conceptual Side
-1. Syntax Parsers:
+1. **Syntax Parsers:**
 > A program that reads your code and determines what it does and if its grammar is valid
 
-1. Lexical Environments:
+1. **Lexical Environments:**
 > Where something sits physically in the code you write.
 
-1. Execution Contexts:
+1. **Execution Contexts:**
 > A Wrapper to help manage the code that is running.
 
-1. Name/ Value Pairs:
+1. **Name/ Value Pairs:**
 > A name which maps to a unique value. The name may be defined more than once, but only can have one value in any given context.
 
   ``Address = '100 Main St``
 
-1. Object:
+1. **Object:**
 > A collection of name value Pairs
 
-1. Javascript and 'Undefined':
+1. **Javascript and 'Undefined':**
 > A special value that Javascript has within it internally that means the variable has not been set. A key word that takes up memory.
 
   example:
+
   ```
   var a,
   console.log(a);
   ```
+
 1. Single Threaded:
 > One command at a time. Under the hood of the browser, maybe not.
 
@@ -33,10 +35,10 @@
 > One at a time executes in the order that it appears.
 
 ## The Global Environment and the Global Object
-1. Two things are always created when execution context is created: **'Global object'= window object when ran in the browser**, **'variable = this' which is equal to the global object**.
-``
-test out in console of browser. if you attach an empty js file to an html file, then type this in the console you will see a window object.
-```
+1. Two things are always created when execution context is created: **'Global object'** = window object when ran in the browser, **'variable = this'** which is equal to the global object.
+
+*test out in console of browser. if you attach an empty js file to an html file, then type this in the console you will see a window object.*
+
 **Global** = "not inside a function"
 1. In Javascript when you are creating variables and functions where those variables are not inside of a function, they end up being attached to the global object.
 1. **Outer Environment** is null at the global level.
@@ -56,6 +58,7 @@ console.log(a);
 
 Results:
 ![img](images/works_hoisting.png)
+
 ```
 b();
 console.log(a);
@@ -65,8 +68,10 @@ function b() {
   console.log('Called b!');
 }
 ```
+
 Results:
 ![img](images/undefined_hoisting.png)
+
 ```
 b();
 console.log(a);
@@ -75,6 +80,7 @@ function b() {
   console.log('Called b!');
 }
 ```
+
 Results:
 ![img](images/not_defined_hoisting.png)
 
