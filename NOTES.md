@@ -120,26 +120,9 @@ Results:
 Javascript does something special... it cares about the lexical environment when it comes to the outer reference that every execution context gets (*outer environment in creation phrase*). When you ask for a variable while running a line of code inside any particular execution context, if it can't find that variable it will look at the outer reference and go look for variables there. Somewhere down below it in the execution stack. And that outer reference where that points is going to depend on where the function sits **lexically**.   
 Now this entire act of searching for references to **outer environments** is called **THE SCOPE CHAIN**
 
-Example:
-![img](images/scopeChain1.png)
-
-Results:
-![img](images/scopeChain2.png)
-
-Example:
-![img](images/scope1.png)
-
-Results:
-![img](images/scope2.png)
-
-Example:
-![img](images/scope3.png)
-
-Results:
-![img](images/scope4.png)
-
-Example:
-![img](images/scope5.png)
-
-Results:
-![img](images/scope6.png)
+| EXAMPLE                        | RESULTS                        |
+|:------------------------------:|:------------------------------:|
+| ![img](images/scopeChain1.png) | ![img](images/scopeChain2.png) |
+| ![img](images/scope1.png)      | ![img](images/scope2.png)      |
+| ![img](images/scope3.png)      | ![img](images/scope4.png)      |
+| ![img](images/scope5.png)      | ![img](images/scope6.png)      |
