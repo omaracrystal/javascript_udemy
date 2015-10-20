@@ -35,7 +35,7 @@
 > One at a time executes in the order that it appears.
 
 ## The Global Environment and the Global Object
-1. Two things are always created when execution context is created: **'Global object'** = window object when ran in the browser, **'variable = this'** which is equal to the global object.
+- Two things are always created when execution context is created: **'Global object'** = window object when ran in the browser, **'variable = this'** which is equal to the global object.
 
 *test out in console of browser. if you attach an empty js file to an html file, then type this in the console you will see a window object.*
 
@@ -113,3 +113,9 @@ Example:
 Results:
 ![img](images/environment.png)
 - Each of the myVars is sitting in its own execution context.
+
+## The Scope Chain
+![img](images/outer_env.png)
+
+Javascript does something special... it cares about the lexical environment when it comes to the outer reference that every execution context gets (*outer environment in creation phrase*). When you ask for a variable while running a line of code inside any particular execution context, if it can't find that variable it will look at the outer reference and go look for variables there. Somewhere down below it in the execution stack. And that outer reference where that points is going to depend on where the function sits **lexically**.   
+Now this entire act of searching for references to **outer environments** is called **THE SCOPE CHAIN**
