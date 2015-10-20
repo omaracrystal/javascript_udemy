@@ -131,3 +131,15 @@ Example:
 
 Results:
 ![img](images/scope2.png)
+
+Example:
+![img](images/scope3.png)
+
+Results:
+![img](images/scope4.png)
+
+Example:
+![img](images/scope5.png)
+
+Results:
+![img](images/scope6.png)
