@@ -111,7 +111,7 @@ Results:
 Example:
 ![img](images/env_ex.png)
 Results:
-![img](images/environment.png)
+[img](images/scopeChain2.png)
 - Each of the myVars is sitting in its own execution context.
 
 ## The Scope Chain
@@ -122,7 +122,6 @@ Now this entire act of searching for references to **outer environments** is cal
 
 | EXAMPLE                        | RESULTS                        |
 |:------------------------------:|:------------------------------:|
-| ![img](images/scopeChain1.png) | ![img](images/scopeChain2.png) |
 | ![img](images/scope1.png)      | ![img](images/scope2.png)      |
 | ![img](images/scope3.png)      | ![img](images/scope4.png)      |
 | ![img](images/scope5.png)      | ![img](images/scope6.png)      |
