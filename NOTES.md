@@ -125,3 +125,9 @@ Example:
 
 Results:
 ![img](images/scopeChain2.png)
+
+Example:
+![img](images/scope1.png)
+
+Results:
+![img](images/scope2.png)
