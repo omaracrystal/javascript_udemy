@@ -451,4 +451,60 @@ $ Hi Tony
 
 ## Understanding Closures (Part 2)
 * All right, so let's look at what may be the classic example of how closures can end up in surprising results when you look at code. But, if you understand what's happenign under the hood it may not be so surprising after all.
+* If you research closures online you will inevitably run across this example as far as why closures can make your code look hard to anticipate, but it actually really isn't that true when you understand what's going on under the hood. So below is an example, that we will examine and see if we can't have a clear understanding, a clear expectation of what's going to happen when this code is run.
+![img](images/closures8.png)
+![img](images/closures9.png)
+* What do you expect this console.log to output in each of these three cases? It's outputting i. Now, you need to remember that the function within the arr.push isn't invoking the function, it's just creating it. The function is invoked below ``fs[0](); ... etc``.
 
+* All right so this is one of those things that tends to surprise people. When you look at this code, what you might expect is to see ``0,1,2``. Or are you expecting something else? Let's look:
+![img](images/closures10.png)
+* Output is all threes. Why? Why would in every case, when it looks for i and goes out to the outer referecne, why woule it find a three in all cases?
+
+* Under the hood: What does the execution stack look like as this is happening? Well the Global Context is always at the bottom, and it contains the build functions, and this variable we just called fs. So we hit this line ``var fs= buildFunctions();`` where it executes ``buildFunctions()``. We get an execution context, and it has two variables, ``i``, (which was created on this for loop), and ``arr``, which declared at the beginning of the function. But what are the values of those two variables by the time we hit the return statement? Well, the for loop runs, and so, i is at first 0, and it pushes the function into the array, it adds this new function to the array right here:
+```
+arr.push(function() {
+  console.log(i);
+});
+```
+* But realize that console.log isn't being executed right here, and that's where a lot of people get confused. But, we already understand function expressions. That all that's happening here is I'm creating a new function object and putting that line of code into it's code property. But it isn't actually running, it's just creating that object. I haven't invoked the function. So it continues, ``i`` becomes a ``1``, because of the ``i++``. It adds another function object into the array, looks identical but it's seperate function object. Then ``i`` becomes ``2`` because of the ``i++``, and we get a third function pushed into the array. Then the ``i++`` is run again, and ``i`` is ``3``, this ends the for loop. But realize that ``i``, its last value when ``i`` left the for loop is now a ``3``. That's what told me to leave the for loop.
+* So when I hit this ``return arr;`` what's in memory in that execution context, is that ``i`` is a ``3``, an array, that ``arr``, holds 3 functions. We'll just call them **f0, f1, and f2**, but they're anonymous.
+![img](images/closures11.png)
+
+* So then, we go back to the global execution context, and this buildFunctions execution context is popped off the stack. But as we learned before, what is in memory is still around.
+![img](images/closures12.png)
+
+* So we hit the first function call ``fs[0]();`` in the array, which is a function, and execute it. The code in the code property is council.log(i), so its execution context is created. There is no variable ``i`` inside of its code, so it goes up the scope chain. It goes to its outer reference. Where was it created? Inside build functions, and what is inside the memory that used to be in the build functions execution context. ``i`` is ``3``.
+![img](images/closures13.png)
+
+* So it outputs ``3`` for ``fs[0]()``, and finishes.
+![img](images/closures14.png)
+
+* The above two steps repeat for ``fs[1]()`` and ``fs[2]()``. They have the same outer environment reference, because it was created in the smae place as the first function. Physically it's sitting in the same spot, inside the same build function. So its outer environment reference, because of its position physically in the code, because of it's left positon, is to the same spot in memory as the first one. And so when it looks for ``i``, it looks at that same spot in memory, where the build functions held its variables, and sees a three. So ``console.log(i)`` results in a three, and the same thing for the third function. They all point at the same memory spot going up the scope chain, because they were all created inside the same function, buildFunctions. So all three of these have the same parent so to speak. This would be like three children and you ask them how old is their father. They're not going to tell you how old their father was when each of them was born. They're each going to give you the same answer, how old their father is now. In the same way, we have three functions that are being executed later, so when we exeute the function, it's only going to be able to tell you what the value is in memory of its parent context of that outer environment reference. It's only going to be able to tell you what's in memory right now, not at the time that we creted the function. Only right now when we're actually executing the function.
+
+* At first glance, this may look weird, but as soon as you realize that, that ``console.log`` isn't executed right there where it's sitting, but executed when we invoke these functions. When we look behind the scences instead of looking at purely what we're purely what we are writing in the code, this makes sense, it makes total sense.
+
+* ``i`` is ``3`` by the time you call all these functions, and so that's what they're going to output.
+
+* We've seen that **first class functions** : (function(){ console.log(i)}), plus this language feature of **closures**, where when I execute the funstion it still has access to the outer variables (being ``i`` and ``arr``). By the way, these are also called **free variables**. A free variable is a variable that is outside a function, but that you have access to. So it closes in, it wraps up these variables, and at the point of execution, all three of these functions (``fs[0](); fs[1](); fs[2]();``) because they're sitting in the same spot (``function() {console.log(i)}``),are going to be pointing to the same memory space (``i``), where these outer variables (``arr``) were located.
+
+* And you might ask the question, well what if I did want this to work? That I would want it to output a **0, 1, and 2**? A couple ways to approach this... What is coming to JavaScript with ES6 is a ``let`` variable.
+* What happens here will be that the ``let`` variable that's created, is scoped to the block, so, inside these curly braces. So everytime the four loop runs, this will be a new variable in memory. And it will be segmented in the side of memory of this execution context so that when this function is called (``console.log(j)``), it would be pointing each time at a different spot within that memory. These are subsegmented essentially as separetly scoped variables. So new JavaScript funcionality lets us do it this way, however how could we do it with the ES5 that is the current version of JavaScript functionality?
+![img](images/closures15.png)
+
+* ES5. Well, in order to preserve the value of ``i`` for this function (``function () { console.log(i); }``), I'm going to need a separate execution context for each of the functions that I'm pushing into the array. I need a parent scope that holds the current value of ``i`` as the loop goes. So, the only way to get an execution context is to execute a function. So how do we execute a function on the fly? Do you remember? An immediately invoked function expression (IIFE) is a nice, clean way to do that.
+![img](images/closures16.png)
+
+* So now I have a function, and I'm passing ``i``. So what's going to happen? Well every time the loop runs, it's going to execute this function, passing 0, then it's going to execute a new one, passing 1, and then it's going to execute a new one passing 2, and each of those executions creates its own execution context, and ``j`` will be stored in each of those three execution contexts.
+* ``j`` will have three seperate execution contexts that has three seperate values. And even though those execution contexts will go away after this line is run, We know that's to closures, that ``j``, all those three ``j``s for those three different execution contexts will be hanging out. So I can just return function, ``return function() { console.log(j); }``. Whoa, that's kinda crazy right? But look we're doing a push and this push is going to push the result of executing this function, and executing this function gives us back a function. The part that gets pushed to the array is ``function(){ console.log(j); }``. Then when this gets executed, and it looks for j, it doesn't need to go all the way out into this for loop. It'll just go out to the above function, the next execution context being:
+```
+(function(j) {
+  return function() {
+    console.log(j);
+  }
+}(i))
+```
+* And ``j`` will store the value at that moment it was executed in the loop.
+![img](images/closures17.png)
+* So the output will be:
+![img](images/closures18.png)
+* So that is how we can use closures to our advantaged; to make sure that we have the values that we need when we execute this inner most function (``function() { console.log(j); }``)later on down here at the bottom of our code.
