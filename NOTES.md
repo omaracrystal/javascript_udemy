@@ -121,7 +121,7 @@ Results:
 ## The Scope Chain
 ![img](images/outer_env.png)
 
-Javascript does something special... it cares about the lexical environment when it comes to the outer reference that every execution context gets (*outer environment in creation phrase*). When you ask for a variable while running a line of code inside any particular execution context, if it can't find that variable it will look at the outer reference and go look for variables there. Somewhere down below it in the execution stack. And that outer reference where that points is going to depend on where the function sits **lexically**.   
+Javascript does something special... it cares about the lexical environment when it comes to the outer reference that every execution context gets (*outer environment in creation phrase*). When you ask for a variable while running a line of code inside any particular execution context, if it can't find that variable it will look at the outer reference and go look for variables there. Somewhere down below it in the execution stack. And that outer reference where that points is going to depend on where the function sits **lexically**.
 Now this entire act of searching for references to **outer environments** is called **THE SCOPE CHAIN**
 
 | EXAMPLE                        | RESULTS                        |
@@ -170,3 +170,135 @@ Now this entire act of searching for references to **outer environments** is cal
 - **Associativity** what order operator functions get called in: left-to-right or right-to-left. When function have the same precedence
 
 [Click here to see Operator Precedence]( https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence.compiler)
+
+##FRAMEWORK ASIDE
+- To fix colliding libraries you can write (angular and jquery maybe?):
+``
+window.libraryName = window.libraryName || "Lib 2";
+``
+
+# OBJECTS AND FUNCTIONS
+## Objects and the Dot
+- Name/ Value pairs
+- Primitive "property"
+- Object "property"
+- Function "method"
+
+## computer member access operator > '[]'
+```
+var person = new Object();
+person["firstname"] = "Tony";
+person["lastname"] = "Alicea";
+
+var firstNameProperty = "firstname";
+
+console.log(person);
+console.log(person[firstNameProperty]);
+
+//faster to type after the "." is 'searching' for a string/property with that name= 'firstname'
+console.log(person.firstname);
+
+//create an object in an object
+person.address = new Object();
+
+//create an property on the most inner object
+person.address.street = "111 Main St.";
+person.address.city = "New York";
+person.address.state = "NY";
+//prefered
+console.log(person.address.state);
+//not recommended, but works the same way
+console.log(person.["address"]["state"]);
+```
+
+## Object and Object Literals
+- Object Literals (much faster to write) is the curly braces = {}
+```
+//assumes creating an object
+var person = {};
+console.log(person);
+
+//below are the same thing
+var person = {
+  firstname: 'Tony',
+  lastname: 'Alicea',
+  address: {
+    street: '111 Main St',
+    city: 'New York',
+    state: 'NY'
+  }
+};
+console.log(person);
+
+person = new Object();
+person.firstname = "Tony";
+person.lastname = "Alicea";
+
+function greet(person) {
+  console.log('Hi ' + person.firstname);
+}
+
+greet(Tony);
+
+greet({
+  firstname: 'Mary';
+  lastname: 'Doe'
+});
+
+Tony.address2 = {
+  street: '333 Secont St.'
+}
+```
+
+### Javascript doesn't have namespaces (we can fake them)
+1. **NameSpace**: A container for variables and functions. Typically to keep variables and functions with the same name seperate
+```
+var greet = 'Hello!';
+var greet = 'Hola!';
+
+console.log(greet);
+
+var english = {};
+var spanish = {};
+
+english.greet = 'Hello!';
+spanish.greet = 'Hola!';
+
+console.log(english);
+```
+
+## JSON (JavaScript Object Notation)
+- Not the same as object literal notation, but it is inspired by it and looks very similar to it
+```
+var objectLiteral1 = {
+  firstname: 'Mary',
+  isAProgrammer: true
+}
+
+console.log(objectLiteral);
+
+//back in the day XML syntax (longer download times)
+<object>
+  <firstname>Mary</fistname>
+  <isAProgrammer>true</isAProgrammer>
+</object>
+
+//anything that is JSON, expects the properties to be wrapped in quotes
+//JSON is technically a subset of the object literal syntax. Meaning that anything that is JSON valid is also valid JavaScript object literal syntax. But not **ALL**
+
+object literal syntax is valid JSON (JSON is more strict and puts quotes around property names)
+{
+  "fistname" : "Mary",
+  "isProgrammer" : true
+}
+
+//can call to convert object literal to JSON
+console.log(JSON.stringigy(objectLiteral1));
+
+//and call JSON.parse to convert to object literal
+var jsonValue = JSON.parse('{ "firstname": "Mary", "isAProgrammer": true }');
+
+console.log(jsonValue);
+
+```
+
