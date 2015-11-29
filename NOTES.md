@@ -302,3 +302,153 @@ console.log(jsonValue);
 
 ```
 
+## Functions are Objects
+
+1. **First Class Functions** = Everything you can do with other types you can do with functions. Assign them to cariables, pass them around, create them on the fly.
+
+1. Function = a special type of object... you can attach the same things you can attact to an object such as: "Primitive, Object, Function" can have the following properties: "Name(optional can be anonymous), and CODE(invocable- meaning that you can say run this code sitting on that property"
+
+## Function Statements and Function Expressions
+1. **Expression** - a unit of code that results in a value. It doesn't have to save to a variable.
+examples:
+```
+a = 3;
+$ 3
+1 + 2;
+$ 3
+
+//if is a statement and expression results in value
+if (a === 3) {
+
+}
+
+//function statement - this gets hoisted to the top... so you can call the function earlier then when it's defined
+greet();
+
+function greet() {
+  console.log('hi');
+}
+
+//this function is considered an expression because it is set to to a variable, ends up being hoisted as an annoynoumous function until it is read inline.
+
+var anonymousGreet = function() {
+  cosole.log('hi');
+}
+
+anonymousGreet();
+```
+1. First class function : you can create a function on the fly (similar to object literal)
+```
+function log(a) {
+  a();
+}
+//invoke code within another code.
+log(function () {
+  console.log('hi');
+});
+```
+- **FIST CLASS FUNCTIONS introduces FUNCTIONAL PROGRAMMING**
+>this concept of first class functions then, where you can pass functions around, give functions to other functions use them like you do variables, introduces an entirely new class of programming, called **functional programming**
+
+## Conceptional aside by VALUE vs by REFERENCE
+- both cases we are talking about variables
+```
+//by value (primitives)
+var a = 3;
+var b;
+// be is only a copy of a and has it's own space in value
+b = a;
+a = 2;
+
+results (b = )
+
+// by reference (all objects (including functions))
+var c = { greeting: 'hi' };
+var d;
+
+d = c;
+c.greeting = 'hello'; //mute (means to change something - 'immutable' means it can't be changed)
+
+console.log(c);
+console.log(d);
+
+//this poits to same location in memory
+c = $ {greeting: 'hello'}
+d = $ {greeting: 'hello'}
+
+```
+
+## Types of ways to create and invoke functions:
+```
+//fuction statement
+function statement () {
+  console.log('I am a statement');
+}
+statement();
+
+//function expression
+var expression = function() {
+  console.log('I am an expression');
+}
+expression();
+
+//IIFE = Immediately Invoked Function Expressions
+var expression = function() {
+  console.log('I am an expression');
+}();
+
+var greeting = function(name) {
+  return 'Hello' + name;
+}('John');
+
+console.log(greeting);
+```
+
+## Understanding Closures (Part 1)
+1. To start with we're going to write a bit of code to show the power of closures then go under the hood to understand them.
+- **CODE**
+```
+function greet(whattosay) {
+  return function(name) {
+    console.log(whattosay + ' ' + name);
+  }
+}
+
+//1.
+greet('Hi')('Tony');
+
+$ Hi Tony
+
+//2.
+var sayHi = greet('Hi');
+sayHi('Tony')
+
+$ Hi Tony
+```
+- **UNDER THE HOOD**
+* 1st when the code starts we have our Global Execution Context. When I hit this line ``sayHi = greet`` it invokes the greet function, the new execution context is created. And the variable that's passed to it, ``whattosay``, is siting in its variable environment. It returns a new function object. It creates a function on the fly, and returns it. And that's it.
+![img](images/closures.png)
+
+* So after that return, the greet execution context is popped off the stack. It's gone. But here's a question... We said every execution context has this space in memory, where the variables and functions created inside of it live. What happens to that memory space when the execution contect goes away? Well under normal circumstances, the JavaScript engine would eventually clear it out with a process called garbage collection. But at the moment that execution context finishes, that memory space is still there. The execution context may be gone but it's just sitting there somewhere in memory.
+![img](images/closures2.png)
+
+* All right, now we move on and we're inside the global execution context again. And then we invoke the function that sayHi is pointing at. It's an anonymous function, because we didn't give out function a name when we returned it.
+![img](images/closures3.png)
+
+* And then that creates a new execution context. And I've passed the name variable, Tony. So that will end up in its memory. So that will end up in its memory.
+![img](images/closures4.png)
+
+* But when I hit this line, console.log. When its code is invoked and JavaScript engine sees the ``whattosay`` variable, what does the JavaScript engine do? Well it goes up the scope chain. There's an outer lexical environment reference. In other words it goes to the next point outside where the function was created to look for that variable, since it couldn't find it inside the function itself.
+![img](images/closures5.png)
+
+* And even though the execution context of that function greet is gone, was popped off the stack, the sayHi execution context still has a reference to the variables, to the memory space of its outer environment. In other words, even thought the greet function ended, it finished, any function created inside of it when they are called will still hae a reference to that greet function's memory. To what was in its memory, its execution context memory space. Think about this for a second. Greet is gone, the execution context is gone. But what's in memory for that execution context isn't and the JavaScript engine makes sure that my function can still go down the scope chain and find it. Even though it's not even on the execution stack anymore.
+![img](images/closures6.png)
+
+* And this way we say that the execution context has closed in its outer variables, the variables that it would normally have reference to anyway. Even though those execution contexts are gone. And **so this phenomenon, of it closing in all the variables that it's supposed to have access to, is called a closure.** Makes sense? It isn't something, then, that you create, that you type, that you tell the JavaScript engine to do.
+![img](images/closures7.png)
+
+* Closures are simply a feature of the JavaScript programming language. They just happen. It doesn't matter when we invoke a function. We don't have to worry if its outer environments are still running. The JavaScript engine will always make sure that whatever function I'm running, that it will ave access to the variables that it's supposed to have access to. That its scope is intact. Makes sense? This is a feature of the language that's extraordinarily important and powerful. We rely on it a lot. It allows us to make some really interesting coding patterns. And understanding what's happening under the hood helps us to understand closures aren't all that complicated. They're just a feature to make sure that, when you run a function, it works the way it's supposed to,; that it has access to those outer variables. It doesn't matter whether the outer functions have finished runnign or not. So when you say, oh I create a closure. Well sort of. You'll read that sometimes, I create a closure. The JavaScript engine creates the closure. We're just taking advantage of it.
+
+## Understanding Closures (Part 2)
+* All right, so let's look at what may be the classic example of how closures can end up in surprising results when you look at code. But, if you understand what's happenign under the hood it may not be so surprising after all.
+
