@@ -30,11 +30,17 @@
   console.log(a);
   ```
 
-1. Single Threaded:
+1. **Single Threaded:**
 > One command at a time. Under the hood of the browser, maybe not.
 
-1. Synchronous: (similar to Single Threaded)
+1. **Synchronous:** (similar to Single Threaded)
 > One at a time executes in the order that it appears.
+
+1. **Callback Function**
+> A Function you give to another function, to be run when the other function is finished. So the gunciton you call (i.e. invoke), 'calls back' by calling the function you gave it when it finishes.
+
+1. **Function Currying**
+> Creating a copy of a function but with some preset parameters. Very useful in mathematical situations.
 
 # Section: 2 - Execution Contexts and Lexical Environments
 
@@ -508,3 +514,100 @@ arr.push(function() {
 * So the output will be:
 ![img](images/closures18.png)
 * So that is how we can use closures to our advantaged; to make sure that we have the values that we need when we execute this inner most function (``function() { console.log(j); }``)later on down here at the bottom of our code.
+
+## Framework aside
+1. **Function Factories** - A factory just means a function that returns or makes other things for me.
+* The difference is that instead of passing language to this function (this inner function), I'm passing it to the outer function, and then returning that inner function. So, the language will be trapped, or collected in the closure. That is, when I try to reference it here when I execute this function object, it will look up the scope chain. Even though makeGreeting() will have been done executing and it's execution context is gone, I'll still have access to language. That lets me do something neat like this (lines 17 and 18).
+![img](images/closures19.png)
+* What will be inside of ``greetEnglish`` and what will ``greetSpanish`` point to? So, even though these two functions lexically sit inside the same ``makeGreeting()`` they're going to poing at two different spots in memory, because they were created during two different execution contexts.
+![img](images/closures20.png)
+* So, my ``makeGreeting()`` function has acted as a factory function. And I'm taking advantaged of closures to essentially set the parameter value that's then used inside the function that's returned.
+![img](images/closures21.png)
+
+## Closures and Callbacks
+1. If you used ``set timeouts`` or **jQuery** you are using closers all the time!
+* All along, if you've done some jQuery or some JavaScript programming, at some point, you've probably been taking advantage of first-class functions and closures. These functions that do something after you run another function, giving this function to another function and having it executed when it's done, is called a **callback**.
+![img](images/closures22.png)
+
+## Call(), Apply(), and Bind()
+
+1. In our execution context we have our Variable Environment, Outer Environment reference and we have this thing, this variable that's set up for us called ``this``.
+1. We've already seen that the ``this`` key word can point to the global object in some cases, and in other cases it can point to the object that contains the function, if the function is a method attached to an object. Wouldn't it be nice to be able to control what the ``this`` variable ends up being? That's were **Call(), Apply(), and Bind()** come in.
+![img](images/this.png)
+
+* So, we already know a function is a special kind of obejct, it has a hidden optional name property which can be anonymous then if you don't have a name. We have a code property that contains the code and that code property is invokable so we can run the code.
+
+* All functions in JavaScript also get access to some special functions, some special methods, on their own. Remember, a function is just an object, so it can have properties and methods. So, all functions have access to a **call** method, and **apply** method, and a **bind** method. And all three of these have to do with the ``this`` variable and the arguments that you pass to the function as well.
+![img](images/this2.png)
+
+* Below we have a reference to ``this`` within a function within the person object. That ``this`` points to the **person** object.
+
+* The second ``this`` mentioned is assigned to the variable logName, however their will be an error when executed because the ``this`` will look up the scope chain to reference the first outter object, which will be the window. There is no ``getFullName()`` method attached to that global object.
+
+### Bind()
+* To fix this we can use the **Bind()** function. So below we pass whatever object I want to be the ``this`` variable when the function runs: ``logName.bind(person)``.
+
+* The **bind** function the **bind** method returns a new function. So, it actually makes a copy of this ``logName`` function, and sets up this new function object, this new copy. So whenever it's run, when its execution context is created the JavaScript engine sees that this was created with this bind, which sets up some hidden things inthe background, so that when the JS engine decides what is the this variable, well it must be ``person`` (in this case).
+
+* Then you can call the new variable ``logPersonName()`` to get the results you intended. Or you can add ``.bind(person)`` to the end of the function itself.
+![img](images/this3.png)
+
+* ** So the .bind creates a copy of whatever function you're calling it on and then whatever methods you pass to it, whatever object you pass to this method, the person object pass to bind, the person object is what the this variable points to by reference**
+
+### Call()
+* If I do ``logName.call``, this calls the function. Same as ``logName()``. But instead I did ``.call`` instead of parenthesis, because ``.call`` also, lets me decide what the ``this`` variable will be. The first thing I pass to call is what the ``this`` keyword should point to. It works the same as these parentheses, but lets me control what ``this`` means, and you can also pass it parameters:
+```
+logName.call(person, 'en', 'es');
+```
+* Unlike **bind**, which creates a copy of the function, **call** actually executes it, and then just decides what the **this** variable should be, and the rest is just the parameters that I would normally pass to the function.
+- Example:
+![img](images/this4.png)
+- Results:
+[img](images/this5.png)
+
+## Apply()
+* It does the exact same thing as **Call()**... only one difference. If I tried to pass variables like that, I'd get an error:
+![img](images/this6.png)
+[img](images/this7.png)
+
+* Because the apply method wants an array of parameters rather than a list of parameters. And that's the only difference between call and apply. See below for correct syntax.
+![img](images/this8.png)
+[img](images/this9.png)
+
+* An array can be more useful especially under mathematical circumstances. Let's say, I was adding a bunch of numbers, and it could be anny number of variables, or other things like that. So, I just have two options depending on how I'm coding, what my pattern is for how I'm using this function.
+![img](images/this10.png)
+
+### **When would I ever actually use this in real life? Well, let's talk about two instances.**
+
+1. **Function Borrowing**
+-First thing I'm going to show is something called **function borrowing**. Let's say I have a second person object with similar property names, but different data, let's say Jane, lastname Doe. This is very similar to my first person object, only the second one doesn't have a ``getFullName`` method.
+- So I'm going to do something called function borrowing by using call or apply.
+![img](images/this11.png)
+- I'll take that first person object I created which does have the ``getFullName`` method and since it's a function, it has access to **.call** and **.apply**. I'll just use **.apply**. So it's going to execute and invoke this function, and I'm going to tell it, but the ``this`` keyword should point to my ``person2`` object. So invoking this method here on this object ``person`` but since it uses the this keyword to access its other properties, I'm setting the ``this`` keyword to my ``person2`` object.
+- So what I've done is **borrowed a function**
+- So you can grab methods from other objects and use them as long as you have similar property names so that the function works.
+![img](images/this12.png)
+[img](images/this13.png)
+
+2. **Function Currying**
+> Creating a copy of a function but with some preset parameters. Very useful in mathematical situations.
+- So below lets create a function called **multiply**, and create a copy of that function with **.bind()**. We don't care about what the **this** keyword is in this case, I'm not using **this** keyword, but I am going to give it a parameter value. Remember, **bind** is not calling, it's not executing the function. So what does giving the parameters do? Giving it parameters sets the permanent values of these parameters when the copy is made.
+- So by setting two, what I'm saying is the first thing I put is the value of **this** keyword, and then my parameters. The first parameter being **2** will always be a **2** in this copy of the function. Variable ``a`` will always be ``2``. Line **47 through 50** is the same as Line **52**.
+![img](images/this14.png)
+- Whenever you have this set up and decide to pass a parameter to it (such as line **48**) it will take place of the second parameter (that wasn't permanently changed prior)
+![img](images/this15.png)
+![img](images/this16.png)
+
+**REVIEW**
+- **Apply** and **Call** invoke the function and let you set up the **this** key word and then pass the other parameters if you want in two different ways (call = list, apply = array). **Bind** creates a copy of the function, let's you set up what the **this** key word should mean and also let's you set default parameters, permanent preset parameters if you want.
+
+## Functional Programming
+- Although JavaScript sounds like it's related to the Java programming language and looks like the C++ C# Java languages a bit, it really has more in common in many ways with other languages call functional programming languages. Languages like **Lisp** or **Scheme** or **ML**. These are languages that have **fist class functions**. Functions that behave as objects. You can pass them as parameters. You can return them from functions.
+- So, having first class functions in a JavaScript programming language means that we can implement what's called **functional programming**.
+- This introduces an entrirely different way of thinking and implementing when programming, and introduces an approach that you simply can't do with other programming languages that don't have first class functions. So let's look at some examples of the beauty of functional programming.
+- **BEFORE:**
+![img](images/fn1.png)
+- **AFTER:**
+![img](images/fn2.png)
+- Here we have extracted the functionality of the function so that it can be called later in the code. This prevents repeating functions with the same functionality.
+- This is a classic example of functional programming. Where I'm using first class functions to my advantage to segment my code in even cleaner ways. And this lets me build really clean and in some ways beautiful looking code.
